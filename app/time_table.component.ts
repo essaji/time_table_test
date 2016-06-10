@@ -107,10 +107,10 @@ export class AppCmp{
         }
 
 
-        if(this.time_table.total_credits + parseInt(course.Credits) > 15){
+        /*if(this.time_table.total_credits + parseInt(course.Credits) > 15){
             $(e.target).attr("checked",false);
             return toastr.error("You cannot add more than 15 credit hours");
-        }
+        }*/
 
 
         //check if class time spot already filled
@@ -148,7 +148,7 @@ export class AppCmp{
             for(var i=0;i<self.days.length;i++)
                 if(cls.Day === self.days[i].name){
 
-                    course.just_name = course.Name.substring(course.Name.indexOf(":")+2,course.Name.length-1);
+                    course.just_name = course.Name.substring(course.Name.indexOf(":")+2,course.Name.length);
 
                     var course_cpy = JSON.parse(JSON.stringify(course));
 

@@ -34,7 +34,7 @@
                     </div>
                 </div>
                 <br />
-                <button class="btn btn-success" (click)="complete()" [disabled]="time_table.total_credits !== 15" >Complete</button>
+                <button class="btn btn-success" (click)="complete()" [disabled]="time_table.total_credits < 15" >Complete</button>
             </fieldset>
         </div>
     </div>
