@@ -17,9 +17,27 @@ import {TTM_Service} from './ttm_service';
             height: 20px;
             width: 20px;
         }
+
+        .table th, table td{
+            border-top:none;
+            height: 60px;
+        }
+
+        .modal-dialog{
+            position: relative;
+            display: table; //This is important
+            overflow-y: auto;
+            overflow-x: auto;
+            width: auto;
+            min-width: 300px;
+        }
+
+        legend{
+            background-color: lightgreen;
+        }
     `]
 })
-export class AppCmp{
+export class AppCmp {
     public courses = [];
     public days  = [
         {
@@ -45,16 +63,13 @@ export class AppCmp{
     ];
 
     public time_table:Object;
-    public table_comp = false;
+    public adding_table = false;
+    public time_tables = [];
+    public current_table:Object;
 
     constructor(private _service:TTM_Service){
         var self = this;
-
-        this.time_table = {
-            days: this.days,
-            total_credits: 0
-        };
-
+        this.initializeCurrentTable();
 
         this._service.getData().subscribe(
             (data) => {
@@ -62,6 +77,9 @@ export class AppCmp{
                 self.courses = data.json();
 
                 self.courses.forEach((course)=> {
+
+                    course.just_name = course.Name.substring(course.Name.indexOf(":")+2,course.Name.length);
+
                     course.Classes.forEach(((cls)=>{
                         cls.end_ts = new Date(cls.EndTime.substring(5,cls.EndTime.length-2)).getTime()/1000;
                         cls.start_ts = new Date(cls.StartTime.substring(5,cls.StartTime.length-2)).getTime()/1000;
@@ -87,6 +105,36 @@ export class AppCmp{
         )
     }
 
+
+    initializeCurrentTable(){
+        this.time_table = {
+            days: [
+                {
+                    name: "Mon",
+                    courses: []
+                },
+                {
+                    name: "Tue",
+                    courses: []
+                },
+                {
+                    name: "Wed",
+                    courses: []
+                },
+                {
+                    name: "Thu",
+                    courses: []
+                },
+                {
+                    name: "Fri",
+                    courses: []
+                }
+            ],
+            total_credits: 0,
+            name: ""
+        };
+    }
+
     addCourse(course,e){
         var self = this;
 
@@ -96,13 +144,13 @@ export class AppCmp{
             console.log("deleting this course");
             console.log(course);
             course.Classes.forEach((cls)=>{
-                for(var i=0;i<self.days.length;i++)
-                    if(cls.Day === self.days[i].name){
-                        //self.days[i].courses.splice(self.days[i].courses.indexOf(course),1);
+                for(var i=0;i<self.time_table.days.length;i++)
+                    if(cls.Day === self.time_table.days[i].name){
+                        //self.time_table.days[i].courses.splice(self.time_table.days[i].courses.indexOf(course),1);
 
-                        for(var k=0;k<self.days[i].courses.length;k++)
-                            if(self.days[i].courses[k].just_name == course.just_name){
-                                self.days[i].courses.splice(k,1);
+                        for(var k=0;k<self.time_table.days[i].courses.length;k++)
+                            if(self.time_table.days[i].courses[k].just_name == course.just_name){
+                                self.time_table.days[i].courses.splice(k,1);
                                 break;
                             }
 
@@ -125,16 +173,16 @@ export class AppCmp{
         var conflict = false;
         course.Classes.forEach((cls)=>{
             if(conflict) return;
-            for(var i=0;i<self.days.length;i++){
+            for(var i=0;i<self.time_table.days.length;i++){
 
-                if(cls.Day === self.days[i].name){
-                    for(var k=0;k<self.days[i].courses.length;k++){
-                        if(cls.start_ts >= self.days[i].courses[k].start_ts && cls.start_ts < self.days[i].courses[k].end_ts
-                            || cls.end_ts <= self.days[i].courses[k].end_ts && cls.end_ts > self.days[i].courses[k].start_ts){
-                            toastr.error("Class time conflict occurred");
+                if(cls.Day === self.time_table.days[i].name){
+                    for(var k=0;k<self.time_table.days[i].courses.length;k++){
+                        if(cls.start_ts >= self.time_table.days[i].courses[k].start_ts && cls.start_ts < self.time_table.days[i].courses[k].end_ts
+                            || cls.end_ts <= self.time_table.days[i].courses[k].end_ts && cls.end_ts > self.time_table.days[i].courses[k].start_ts){
+                            toastr.error("Class time conflict occurred with "+self.time_table.days[i].courses[k].just_name);
 
                             console.log(cls);
-                            console.log(self.days[i].courses[k]);
+                            console.log(self.time_table.days[i].courses[k]);
 
 
                             $(e.target).attr("checked",false);
@@ -153,10 +201,10 @@ export class AppCmp{
 
         course.Classes.forEach((cls)=>{
 
-            for(var i=0;i<self.days.length;i++)
-                if(cls.Day === self.days[i].name){
+            for(var i=0;i<self.time_table.days.length;i++)
+                if(cls.Day === self.time_table.days[i].name){
 
-                    course.just_name = course.Name.substring(course.Name.indexOf(":")+2,course.Name.length);
+                    //course.just_name = course.Name.substring(course.Name.indexOf(":")+2,course.Name.length);
 
                     var course_cpy = JSON.parse(JSON.stringify(course));
 
@@ -166,29 +214,29 @@ export class AppCmp{
                     course_cpy.end_ts = cls.end_ts;
 
 
-                    /*for(var k=0;k<self.days[i].courses.length;k++){
-                        if(course_cpy.start_ts < self.days[i].courses[k].start_ts)
-                            self.days[i].courses.splice(0,course_cpy);
-                        else if(self.days[i].courses[k+1] && course_cpy.start_ts >= self.days[i].courses[k].end_ts && course_cpy.start_ts <= self.days[i].courses[k+1].start_ts)
-                            self.days[i].courses.splice(k+1,course_cpy);
+                    /*for(var k=0;k<self.time_table.days[i].courses.length;k++){
+                        if(course_cpy.start_ts < self.time_table.days[i].courses[k].start_ts)
+                            self.time_table.days[i].courses.splice(0,course_cpy);
+                        else if(self.time_table.days[i].courses[k+1] && course_cpy.start_ts >= self.time_table.days[i].courses[k].end_ts && course_cpy.start_ts <= self.time_table.days[i].courses[k+1].start_ts)
+                            self.time_table.days[i].courses.splice(k+1,course_cpy);
                         else
-                            self.days[i].courses.push(course_cpy)
+                            self.time_table.days[i].courses.push(course_cpy)
                     }*/
 
-                    if(self.days[i].courses.length === 0)
-                        self.days[i].courses.push(course_cpy);
+                    if(self.time_table.days[i].courses.length === 0)
+                        self.time_table.days[i].courses.push(course_cpy);
                     else{
-                        for(var k=0;k<self.days[i].courses.length;k++){
-                            if(course_cpy.start_ts < self.days[i].courses[k].start_ts){
-                                self.days[i].courses.splice(0,0,course_cpy);
+                        for(var k=0;k<self.time_table.days[i].courses.length;k++){
+                            if(course_cpy.start_ts < self.time_table.days[i].courses[k].start_ts){
+                                self.time_table.days[i].courses.splice(0,0,course_cpy);
                                 break;
                             }
-                            else if(self.days[i].courses[k+1] && course_cpy.start_ts >= self.days[i].courses[k].end_ts && course_cpy.start_ts <= self.days[i].courses[k+1].start_ts) {
-                                self.days[i].courses.splice(k+1,0,course_cpy);
+                            else if(self.time_table.days[i].courses[k+1] && course_cpy.start_ts >= self.time_table.days[i].courses[k].end_ts && course_cpy.start_ts <= self.time_table.days[i].courses[k+1].start_ts) {
+                                self.time_table.days[i].courses.splice(k+1,0,course_cpy);
                                 break;
                             }
-                            else if(course_cpy.start_ts > self.days[i].courses[k].start_ts){
-                                self.days[i].courses.push(course_cpy);
+                            else if(course_cpy.start_ts > self.time_table.days[i].courses[k].start_ts){
+                                self.time_table.days[i].courses.push(course_cpy);
                                 break;
                             }
                         }
@@ -200,7 +248,7 @@ export class AppCmp{
 
         });
 
-        console.log(self.days);
+        //console.log(self.time_table.days);
 
         course.added = true;
         self.time_table.total_credits += parseInt(course.Credits);
@@ -208,6 +256,21 @@ export class AppCmp{
 
     complete(){
         toastr.success("Table table completed");
-        this.table_comp = true;
+        this.adding_table = false;
+        this.time_tables.push(JSON.parse(JSON.stringify(this.time_table)));
+        this.initializeCurrentTable();
+        this.courses.forEach((course)=>{
+            course.added = false;
+        })
+    }
+
+    ViewTimeTable(table){
+        /*var self = this;
+        table.days.forEach((day)=>{
+            self.time_table.days.push(day);
+        });
+        console.log(this.time_table);*/
+
+        this.current_table = table;
     }
 }

@@ -4,38 +4,109 @@
             <h3>Time Table Manager</h3>
         </div>
         <div class="panel-body">
-            <table class="table table-hover" >
-                <tbody>
-                    <tr *ngFor="let day of days" >
+            <fieldset [hidden]="!adding_table" >
+                <legend>Table View</legend>
+                <table class="table table-hover" >
+                    <tbody>
+                    <tr *ngFor="let day of time_table.days" >
                         <th>{{day.name}}</th>
                         <td *ngFor="let course of day.courses" >
                             <strong>{{course.start_time}}</strong> to <strong>{{course.end_time}}</strong>
                             <div>{{course.just_name}}</div>
                         </td>
                     </tr>
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </fieldset>
 
-            <fieldset [hidden]="table_comp" >
+
+            <fieldset [hidden]="!adding_table" >
                 <legend>Select Your Courses</legend>
 
                 <div>
-                    <strong>Totla Credit Hours Selected: </strong> {{time_table.total_credits}}
+                    <strong>Total Credit Hours Selected: </strong> {{time_table.total_credits}}
+                </div>
+                <br />
+                <div class="form-group" >
+                    <label>Enter a Name for Time Table</label>
+                    <input style="max-width: 300px;" type="text" class="form-control" placeholder="Time Table Name" [(ngModel)]="time_table.name" />
+                    <button style="margin-top: 10px;" class="btn btn-success" (click)="complete()" [disabled]="time_table.total_credits < 15 || !time_table.name" >Complete</button>
                 </div>
 
 
                 <div *ngFor="let course of courses" class="course_box"  >
-                    <div><input type="checkbox" (change)="addCourse(course,$event)" [checked]="course.added" /> {{course.Name}}</div>
-                    <div>Credits: {{course.Credits}}</div>
-                    <div>Class Timings:
+                    <div><input type="checkbox" (change)="addCourse(course,$event)" [checked]="course.added" /></div>
+                    <div><span style="text-decoration: underline;" >Name:</span> {{course.just_name}}</div>
+                    <div><span style="text-decoration: underline;" >Credits:</span> {{course.Credits}}</div>
+                    <div><span style="text-decoration: underline;" >Class Timings:</span>
                         <div *ngFor="let class of course.Classes" >
                             <strong>{{class.start_time}}</strong> to <strong>{{class.end_time}}</strong> on <strong>{{class.Day}}</strong>
                         </div>
                     </div>
                 </div>
-                <br />
-                <button class="btn btn-success" (click)="complete()" [disabled]="time_table.total_credits < 15" >Complete</button>
+
+                <!--<table class="table">
+                    <thead>
+                        <th>Name</th>
+                        <th>Credits</th>
+                        <th>Class Time</th>
+                        <th>Add Course</th>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let course of courses" >
+                            <td>{{course.Name}}</td>
+                            <td>{{course.Credits}}</td>
+                            <td>
+                                <div *ngFor="let class of course.Classes" >
+                                    <strong>{{class.start_time}}</strong> to <strong>{{class.end_time}}</strong> on <strong>{{class.Day}}</strong>
+                                </div>
+                            </td>
+                            <td>
+                                &lt;!&ndash;<button class="btn btn-primary" (click)="addCourse(course,$event)" [disabled]="course.added" >Add Course</button>&ndash;&gt;
+                                <input type="checkbox" (change)="addCourse(course,$event)" [checked]="course.added" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>-->
+
             </fieldset>
+
+            <fieldset [hidden]="adding_table" >
+                <legend>Existing Time Tables</legend>
+
+                <div *ngFor="let table of time_tables" class="course_box"  >
+                    <div>{{table.name}}</div>
+                    <div>Credits: {{table.total_credits}}</div>
+                    <br /><button class="btn btn-primary" (click)="ViewTimeTable(table)" data-toggle="modal" data-target="#view_table" >View</button>
+                </div>
+                <br />
+                <button class="btn btn-success" (click)="adding_table = !adding_table" >Add New Time Table</button>
+            </fieldset>
+
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" role="dialog" id="view_table" >
+    <div class="modal-dialog">
+        <div class="modal-content" *ngIf="current_table" >
+            <div class="modal-header">
+                <h4>{{current_table.name}}</h4>
+            </div>
+            <div class="modal-body" >
+                <table class="table table-hover">
+                    <tbody>
+                    <tr *ngFor="let day of current_table.days" >
+                        <th>{{day.name}}</th>
+                        <td *ngFor="let course of day.courses" >
+                            <strong>{{course.start_time}}</strong> to <strong>{{course.end_time}}</strong>
+                            <div style="text-align: center;" >{{course.just_name}}</div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
