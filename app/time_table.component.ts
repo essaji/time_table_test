@@ -93,11 +93,19 @@ export class AppCmp{
 
         //if already added remove it.
         if(course.added){
+            console.log("deleting this course");
+            console.log(course);
             course.Classes.forEach((cls)=>{
                 for(var i=0;i<self.days.length;i++)
                     if(cls.Day === self.days[i].name){
-                        //self.days[i].courses.push(course);
-                        self.days[i].courses.splice(self.days[i].courses.indexOf(course),1);
+                        //self.days[i].courses.splice(self.days[i].courses.indexOf(course),1);
+
+                        for(var k=0;k<self.days[i].courses.length;k++)
+                            if(self.days[i].courses[k].just_name == course.just_name){
+                                self.days[i].courses.splice(k,1);
+                                break;
+                            }
+
                     }
             });
 
