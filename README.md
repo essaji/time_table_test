@@ -1,14 +1,11 @@
-# ng2_starter
-Angular 2.0 starter
+# Time Table Manager Test
 
-#Usage
-`git clone https://github.com/essaji/ng2_starter.git`
+##Usage
+```
+git clone https://github.com/essaji/time_table_test.git
+cd time_table_test
+npm install
+npm install -g live-server
+live-server
 
-`cd ng2_starter`
-
-`npm install`
-
-`npm install -g live-server`
-
-`live-server`
-#Time_Table_Test 
+```
