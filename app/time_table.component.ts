@@ -87,10 +87,32 @@ export class AppCmp {
                         cls.start_time = new Date(cls.start_ts * 1000).toLocaleTimeString();
                         cls.end_time = new Date(cls.end_ts * 1000).toLocaleTimeString();
 
+                        /*if(course.just_name.toLowerCase().includes("software") || course.just_name.toLowerCase().includes("bahasa")){
+                            for(var i=0;i<self.time_table.days.length;i++)
+                                if(self.time_table.days[i].name == cls.Day){
+                                    self.time_table.days[i].courses.push(course);
+                                    break;
+                                }
+                        }*/
+
                         //testing
                         /*var time =new Date(cls.start_ts * 1000).toLocaleTimeString();
-                        console.log(time);*/
+                         console.log(time);*/
                     }))
+
+
+                    /*//check required courses & add them to table
+                    if(course.just_name.toLowerCase().includes("software") || course.just_name.toLowerCase().includes("bahasa")){
+                        course.required = true;
+                        course.Classes.forEach((cls)=>{
+                            for(var i=0;i<self.time_table.days.length;i++)
+                                if(self.time_table.days[i].name == cls.Day){
+                                    self.time_table.days[i].courses.push(course);
+                                    course.added = true;
+                                    break;
+                                }
+                        })
+                    }*/
                 });
 
                 console.log(self.courses);
@@ -255,6 +277,13 @@ export class AppCmp {
     }
 
     complete(){
+
+        for(var i=0;i<this.courses.length;i++)
+            if((this.courses[i].just_name.toLowerCase().includes("software") || this.courses[i].just_name.toLowerCase().includes("bahasa"))
+            && !this.courses[i].added
+            ) return toastr.error("Software & Bahasa are required courses");
+
+
         toastr.success("Table table completed");
         this.adding_table = false;
         this.time_tables.push(JSON.parse(JSON.stringify(this.time_table)));
@@ -264,13 +293,19 @@ export class AppCmp {
         })
     }
 
-    ViewTimeTable(table){
-        /*var self = this;
-        table.days.forEach((day)=>{
-            self.time_table.days.push(day);
+    goBack(){
+        this.adding_table = false;
+        this.initializeCurrentTable();
+        this.courses.forEach((course)=>{
+            course.added = false;
         });
-        console.log(this.time_table);*/
+    }
 
+    ViewTimeTable(table){
         this.current_table = table;
     }
+
+    /*addNewTable(){
+        this.adding_table = !this.adding_table;
+    }*/
 }

@@ -4,6 +4,8 @@
             <h3>Time Table Manager</h3>
         </div>
         <div class="panel-body">
+
+
             <fieldset [hidden]="!adding_table" >
                 <legend>Table View</legend>
                 <table class="table table-hover" >
@@ -20,6 +22,8 @@
             </fieldset>
 
 
+
+
             <fieldset [hidden]="!adding_table" >
                 <legend>Select Your Courses</legend>
 
@@ -31,6 +35,7 @@
                     <label>Enter a Name for Time Table</label>
                     <input style="max-width: 300px;" type="text" class="form-control" placeholder="Time Table Name" [(ngModel)]="time_table.name" />
                     <button style="margin-top: 10px;" class="btn btn-success" (click)="complete()" [disabled]="time_table.total_credits < 15 || !time_table.name" >Complete</button>
+                    <button style="margin-top: 10px;" class="btn btn-warning" (click)="goBack()" >Go Back</button>
                 </div>
 
 
@@ -70,6 +75,8 @@
                 </table>-->
 
             </fieldset>
+
+
 
             <fieldset [hidden]="adding_table" >
                 <legend>Existing Time Tables</legend>
