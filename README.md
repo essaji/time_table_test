@@ -1,4 +1,4 @@
-# Time Table Manager Test
+# Time Table Manager Test Project
 
 ##Usage
 ```
