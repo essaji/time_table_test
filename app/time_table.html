@@ -1,0 +1,41 @@
+<div class="container-fluid">
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h3>Time Table Manager</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table table-hover" >
+                <tbody>
+                    <tr *ngFor="let day of days" >
+                        <th>{{day.name}}</th>
+                        <td *ngFor="let course of day.courses" >
+                            <strong>{{course.start_time}}</strong> to <strong>{{course.end_time}}</strong>
+                            <div>{{course.just_name}}</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <fieldset [hidden]="table_comp" >
+                <legend>Select Your Courses</legend>
+
+                <div>
+                    <strong>Totla Credit Hours Selected: </strong> {{time_table.total_credits}}
+                </div>
+
+
+                <div *ngFor="let course of courses" class="course_box"  >
+                    <div><input type="checkbox" (change)="addCourse(course,$event)" [checked]="course.added" /> {{course.Name}}</div>
+                    <div>Credits: {{course.Credits}}</div>
+                    <div>Class Timings:
+                        <div *ngFor="let class of course.Classes" >
+                            <strong>{{class.start_time}}</strong> to <strong>{{class.end_time}}</strong> on <strong>{{class.Day}}</strong>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <button class="btn btn-success" (click)="complete()" [disabled]="time_table.total_credits !== 15" >Complete</button>
+            </fieldset>
+        </div>
+    </div>
+</div>
