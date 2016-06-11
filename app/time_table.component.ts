@@ -32,8 +32,18 @@ import {TTM_Service} from './ttm_service';
             min-width: 300px;
         }
 
+        .table th{
+            background-color: lightblue;
+        }
+
+        .table{
+            background-color: lightcyan;
+        }
+
         legend{
             background-color: lightgreen;
+            padding: 10px;
+            border-radius: 5px
         }
     `]
 })
@@ -278,10 +288,11 @@ export class AppCmp {
 
     complete(){
 
+        //checks if required courses are also added.
         for(var i=0;i<this.courses.length;i++)
             if((this.courses[i].just_name.toLowerCase().includes("software") || this.courses[i].just_name.toLowerCase().includes("bahasa"))
             && !this.courses[i].added
-            ) return toastr.error("Software & Bahasa are required courses");
+            ) return toastr.error("Software Engineering & Bahasa Jiwa Bangsa are required courses");
 
 
         toastr.success("Table table completed");
